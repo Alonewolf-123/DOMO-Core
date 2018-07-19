@@ -1,0 +1,22 @@
+[Unit]
+Description=Bitcoin's distributed currency daemon
+After=network.target
+
+[Service]
+User=Domocoin
+Group=Domocoin
+
+Type=forking
+PIDFile=/var/lib/Domocoind/Domocoind.pid
+ExecStart=/usr/bin/Domocoind -daemon -pid=/var/lib/Domocoind/Domocoind.pid \
+-conf=/etc/Domocoin/Domocoin.conf -datadir=/var/lib/Domocoind -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
