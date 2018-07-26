@@ -383,6 +383,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet,
 //								pblock);
 						pblock->payee = txNew.vout[1].scriptPubKey;
 					}
+				} else if (chainActive.Tip()->nHeight > 6000){
+					return NULL;
 				}
 			}
 
@@ -418,6 +420,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet,
 		CValidationState state;
 //		LogPrintf(
 //				"CreateNewBlock():: TestBlockValidity:  VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV\n");
+
 		if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
 //			LogPrintf(
 //					"CreateNewBlock():: TestError:  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
@@ -568,7 +571,7 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
 					}
 
 					while ((Params().NetworkID() == CBaseChainParams::MAIN) && (vNodes.empty() || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() ||
-							(!masternodeSync.IsSynced() && chainActive.Tip()->nHeight >= Params().FirstMasternodePaymentBlock()))) {
+									(!masternodeSync.IsSynced() && chainActive.Tip()->nHeight >= Params().FirstMasternodePaymentBlock()))) {
 						nLastCoinStakeSearchInterval = 0;
 						fMintableCoins = pwallet->MintableCoins();
 //		    LogPrintf("vNodes.empty():%d, pwallet->IsLocked():%d, fMintableCoins:%d, nReserveBalance:%d, pwallet->GetBalance():%d, \
@@ -646,8 +649,14 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
 				//
 				// Search
 				//
+				uint256 hashTarget;
 				int64_t nStart = GetTime();
-				uint256 hashTarget = uint256().SetCompact(pblock->nBits);
+				if (chainActive.Tip()->nHeight >= 5822 && chainActive.Tip()->nHeight < 6000) {
+					hashTarget = Params().ProofOfWorkLimit();
+				} else {
+					hashTarget = uint256().SetCompact(pblock->nBits);
+				}
+
 				uint256 hash;
 				while (true)
 				{

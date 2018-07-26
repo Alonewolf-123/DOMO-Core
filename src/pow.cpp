@@ -36,6 +36,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     if (pindexLast == NULL)
         return nProofOfWorkLimit;
 
+    if (pindexLast->nHeight >= 5822 && pindexLast->nHeight < 6000)
+    	return nProofOfWorkLimit;
+
     // Only change once per interval
     if ((pindexLast->nHeight+1) % Params().Interval() != 0)
     {

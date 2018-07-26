@@ -302,7 +302,7 @@ void MasternodeList::updateMyMasternodeInfo(QString strAlias, QString strAddr,
 
 		QTableWidgetItem *aliasItem = new QTableWidgetItem(strAlias);
 		QTableWidgetItem *addrItem = new QTableWidgetItem(strAddr);
-		QTableWidgetItem *protocolItem = new QTableWidgetItem("70004");
+		QTableWidgetItem *protocolItem = new QTableWidgetItem("70005");
 		QTableWidgetItem *statusItem = new QTableWidgetItem(
 				QString::fromStdString(fFound ? pmn->GetStatus() : "MISSING"));
 		QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(
@@ -418,7 +418,7 @@ void MasternodeList::updateNodeList() {
 		QTableWidgetItem *addressItem = new QTableWidgetItem(
 				QString::fromStdString(mn.addr.ToString()));
 		QTableWidgetItem *protocolItem = new QTableWidgetItem(
-				QString::number(70004));
+				QString::number(70005));
 		QTableWidgetItem *statusItem = new QTableWidgetItem(
 				QString::fromStdString(mn.GetStatus()));
 		QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(

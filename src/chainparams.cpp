@@ -64,6 +64,7 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
         (      0, uint256("0x0000055a719047ca4a67b6823a9efefa0f24578c305e868b4d1ccc73ad575b98"))
         (   400, uint256("0x00000562e4130a9d53fbd1ddc607418357f51f3868fe4a4510f95f7d0f10c0c7"))
+		( 6100, uint256("0x00000015fbfc83bcb184d0c96681dad3fae1a1fea3290463c913f778db5462ce"))
         ;
 static const Checkpoints::CCheckpointData data = {
         &mapCheckpoints,
@@ -110,7 +111,7 @@ public:
         pchMessageStart[2] = 0x03;
         pchMessageStart[3] = 0xdd;
         vAlertPubKey = ParseHex("0426d1c5aac0e7b98f37f5f8ca10a18bb915820516723a727093cca65108ac24cdf3467ff06a39ad388ccc3d83802c85df73dba14e3db3835cec6892b9647e92fa");
-        nDefaultPort = 10716;
+        nDefaultPort = 10717;
         bnProofOfWorkLimit = nMainProofOfWorkLimit;
         nSubsidyHalvingInterval = 60480;
         nEnforceBlockUpgradeMajority = 7500;
