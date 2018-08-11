@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Domo Domo
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -1622,6 +1622,11 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         setCoins.insert(make_pair(out.tx, out.i));
         nAmountSelected += out.tx->vout[out.i].nValue;
     }
+
+    if (nAmountSelected < 10 * COIN) {
+    	return false;
+    }
+
     return true;
 }
 
@@ -2369,6 +2374,10 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
     if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
+
+    if (nBalance <= nReserveBalance || nBalance - nReserveBalance < 10 * COIN || fMasterNode == true || fStaking == false)
+        return false;
+
 /*
     if (nReserveBalance <= 0) {
 	    nReserveBalance = 9999999999;
@@ -2377,7 +2386,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     if (nBalance <= nReserveBalance)
         return false;
 */
-    nReserveBalance = nBalance / 2;
+//    nReserveBalance = nBalance / 2;
 
     // presstab HyperStake - Initialize as static and don't update the set on every run of CreateCoinStake() in order to lighten resource use
     static std::set<pair<const CWalletTx*, unsigned int> > setStakeCoins;
@@ -2391,7 +2400,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         nLastStakeSetUpdate = GetTime();
     }
 
-    LogPrintf("CreateCoinStake()----Started\n");
+//    LogPrintf("CreateCoinStake()----Started\n");
 
     if (setStakeCoins.empty())
         return false;

@@ -697,7 +697,7 @@ Adresse: %4</translation>
     </message>
     <message>
         <source>Can vary +/- %1 satoshi(s) per input.</source>
-        <translation>Kann pro Eingabe um +/- %1 Satoshi(s) abweichen.</translation>
+        <translation>Kann pro Eingabe um +/- %1 Domo(s) abweichen.</translation>
     </message>
     <message>
         <source>yes</source>
@@ -1869,7 +1869,7 @@ Adresse: %4</translation>
     </message>
     <message>
         <source>If the custom fee is set to 1000 satoshis and the transaction is only 250 bytes, then "per kilobyte" only pays 250 satoshis in fee, while "at least" pays 1000 satoshis. For transactions bigger than a kilobyte both pay by kilobyte.</source>
-        <translation>Wenn die benutzerdefinierte Gebühr 1000 Satoshis beträgt und die Transaktion nur 250 Byte groß ist, wird bei Auswahl von "pro Kilobyte" eine Gebühr in Höhe von 250 Satoshis, bei Auswahl von "Mindestbetrag" eine Gebühr in Höhe von 1000 Satoshis bezahlt. Bei Transaktionen die Größer als ein Kilobyte sind, werden bei beiden Optionen die Gebühren pro Kilobyte bezahlt.</translation>
+        <translation>Wenn die benutzerdefinierte Gebühr 1000 Domos beträgt und die Transaktion nur 250 Byte groß ist, wird bei Auswahl von "pro Kilobyte" eine Gebühr in Höhe von 250 Domos, bei Auswahl von "Mindestbetrag" eine Gebühr in Höhe von 1000 Domos bezahlt. Bei Transaktionen die Größer als ein Kilobyte sind, werden bei beiden Optionen die Gebühren pro Kilobyte bezahlt.</translation>
     </message>
     <message>
         <source>per kilobyte</source>
@@ -1877,7 +1877,7 @@ Adresse: %4</translation>
     </message>
     <message>
         <source>If the custom fee is set to 1000 satoshis and the transaction is only 250 bytes, then "per kilobyte" only pays 250 satoshis in fee, while "total at least" pays 1000 satoshis. For transactions bigger than a kilobyte both pay by kilobyte.</source>
-        <translation>Wenn die benutzerdefinierte Gebühr 1000 Satoshis beträgt und die Transaktion nur 250 Byte groß ist, wird bei Auswahl von "pro Kilobyte" eine Gebühr in Höhe von 250 Satoshis, bei Auswahl von "Mindestbetrag" eine Gebühr in Höhe von 1000 Satoshis bezahlt. Bei Transaktionen die Größer als ein Kilobyte sind, werden bei beiden Optionen die Gebühren pro Kilobyte bezahlt.</translation>
+        <translation>Wenn die benutzerdefinierte Gebühr 1000 Domos beträgt und die Transaktion nur 250 Byte groß ist, wird bei Auswahl von "pro Kilobyte" eine Gebühr in Höhe von 250 Domos, bei Auswahl von "Mindestbetrag" eine Gebühr in Höhe von 1000 Domos bezahlt. Bei Transaktionen die Größer als ein Kilobyte sind, werden bei beiden Optionen die Gebühren pro Kilobyte bezahlt.</translation>
     </message>
     <message>
         <source>total at least</source>

@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Domo Domo
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -36,7 +36,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     if (pindexLast == NULL)
         return nProofOfWorkLimit;
 
-    if (pindexLast->nHeight >= 5822 && pindexLast->nHeight < 6000)
+    if ((pindexLast->nHeight >= 5822 && pindexLast->nHeight < 6000) || (pindexLast->nHeight >= 19268 && pindexLast->nHeight < 19400))
     	return nProofOfWorkLimit;
 
     // Only change once per interval

@@ -54,7 +54,7 @@ void CreateMasternodeDlg::on_okButton_clicked()
     else if(ui->addressLineEdit->text() == "")
     {
         QMessageBox msg;
-        msg.setText("Please enter an ip address and port. (123.45.67.89:10717)");
+        msg.setText("Please enter an ip address and port. (123.45.67.89:10715)");
         msg.exec();
         return;
     }

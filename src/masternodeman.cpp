@@ -441,21 +441,28 @@ CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight
         Make a vector with all of the last paid times
     */
 
+//    LogPrintf("GetNextMasternodeInQueueForPayment: started\n");
     int nMnCount = CountEnabled();
+//    LogPrintf("GetNextMasternodeInQueueForPayment: nMnCount - %d\n", nMnCount);
+
     BOOST_FOREACH (CMasternode& mn, vMasternodes) {
         mn.Check();
         if (!mn.IsEnabled()) continue;
 
+//        LogPrintf("GetNextMasternodeInQueueForPayment: mn.protocolVersion: %d, masternodePayments.GetMinMasternodePaymentsProto(): %d\n",mn.protocolVersion, masternodePayments.GetMinMasternodePaymentsProto());
         // //check protocol version
         if (mn.protocolVersion < masternodePayments.GetMinMasternodePaymentsProto()) continue;
 
+//        LogPrintf("GetNextMasternodeInQueueForPayment: IsScheduled: %d\n", masternodePayments.IsScheduled(mn, nBlockHeight));
         //it's in the list (up to 8 entries ahead of current block to allow propagation) -- so let's skip it
         if (masternodePayments.IsScheduled(mn, nBlockHeight)) continue;
 
+//        LogPrintf("GetNextMasternodeInQueueForPayment: fFilterSigTime-%d && mn.sigTime-%d + (nMnCount * 2.6 * 60) > GetAdjustedTime()\n",fFilterSigTime, mn.sigTime);
         //it's too new, wait for a cycle
         if (fFilterSigTime && mn.sigTime + (nMnCount * 2.6 * 60) > GetAdjustedTime()) continue;
 
         //make sure it has as many confirmations as there are masternodes
+//        LogPrintf("GetNextMasternodeInQueueForPayment: mnGetMasternodeInputAge()-%d\n", mn.GetMasternodeInputAge());
         if (mn.GetMasternodeInputAge() < nMnCount) continue;
 
         vecMasternodeLastPaid.push_back(make_pair(mn.SecondsSincePayment(), mn.vin));
@@ -481,6 +488,7 @@ CMasternode* CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight
         if (!pmn) break;
 
         uint256 n = pmn->CalculateScore(1, nBlockHeight - 100);
+//        cout << "GetNextMasternodeInQueueForPayment" << n.ToString() << endl;
         if (n > nHigh) {
             nHigh = n;
             pBestMasternode = pmn;
@@ -866,8 +874,8 @@ void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CData
         }
 
         if (Params().NetworkID() == CBaseChainParams::MAIN) {
-            if (addr.GetPort() != 10717) return;
-        } else if (addr.GetPort() == 10717)
+            if (addr.GetPort() != 10715) return;
+        } else if (addr.GetPort() == 10715)
             return;
 
         //search existing Masternode list, this is where we update existing Masternodes with new dsee broadcasts

@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Domo Domo
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -1652,6 +1652,10 @@ nSubsidy = 0;
 //    nSubsidy = (nProofOfStakeInterestMul * nCoinAge * COIN_YEAR_REWARD * 33) / (nProofOfStakeInterestDiv * 365 * 33 + 8);
 
 //    LogPrintf("GetProofOfStakeReward:: create=%s nCoinAge=%d\n", FormatMoney(nSubsidy), nCoinAge);
+if (Params().NetworkID() == CBaseChainParams::TESTNET) {
+return 1 * COIN;
+}
+
 if (nHeight >= Params().FIRST_POS_BLOCK())
 nSubsidy = 0 * COIN;
 
@@ -1663,14 +1667,12 @@ if (nHeight == 0) {
 return nGenesisBlockRewardCoin;
 }
 
-/*
- if (Params().NetworkID() == CBaseChainParams::TESTNET) {
- if (nHeight < 1000)
- return nBlockRewardStartCoin;
- else
- return nBlockRewardMinimumCoin;
- }
- */
+if (Params().NetworkID() == CBaseChainParams::TESTNET) {
+if (nHeight < 1000)
+	return 250 * COIN;
+else
+	return 10 * COIN;
+}
 
 CAmount nSubsidy = 1 * COIN;
 

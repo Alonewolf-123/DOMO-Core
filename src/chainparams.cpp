@@ -1,4 +1,4 @@
-// Copyright (c) 2010 Satoshi Nakamoto
+// Copyright (c) 2010 Domo Domo
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -65,6 +65,7 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
         (      0, uint256("0x0000055a719047ca4a67b6823a9efefa0f24578c305e868b4d1ccc73ad575b98"))
         (   400, uint256("0x00000562e4130a9d53fbd1ddc607418357f51f3868fe4a4510f95f7d0f10c0c7"))
 		( 6100, uint256("0x00000015fbfc83bcb184d0c96681dad3fae1a1fea3290463c913f778db5462ce"))
+		( 19300, uint256("0x00000c90a8f2356db3cfc451ae34fcadef66c9a41cee578e6a0a08d096dfa84b"))
         ;
 static const Checkpoints::CCheckpointData data = {
         &mapCheckpoints,
@@ -111,7 +112,7 @@ public:
         pchMessageStart[2] = 0x03;
         pchMessageStart[3] = 0xdd;
         vAlertPubKey = ParseHex("0426d1c5aac0e7b98f37f5f8ca10a18bb915820516723a727093cca65108ac24cdf3467ff06a39ad388ccc3d83802c85df73dba14e3db3835cec6892b9647e92fa");
-        nDefaultPort = 10717;
+        nDefaultPort = 10715;
         bnProofOfWorkLimit = nMainProofOfWorkLimit;
         nSubsidyHalvingInterval = 60480;
         nEnforceBlockUpgradeMajority = 7500;
@@ -122,7 +123,7 @@ public:
         nTargetSpacing = 30; // 30 seconds
         nMaxTipAge = 24 * 60 * 60;
         nModifierUpdateBlock = 615800;
-        nFirstPOSBlock = 86000; // est 25 Nov 2018
+        nFirstPOSBlock = 20000; // est 25 Nov 2018
         nFirstMasternodePaymentBlock = 600;
         nStakeMinAge = 60 * 60; // 1 hour
 
@@ -218,7 +219,7 @@ public:
         nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
         nFirstPOSBlock = 210;
         nFirstMasternodePaymentBlock = 200;
-        nStakeMinAge = 60 * 60; // 1 hour
+        nStakeMinAge = 10 * 60; // 1 hour
 
         bnProofOfWorkLimit = nMainProofOfWorkLimit;
         genesis.nBits    = nMainProofOfWorkLimit.GetCompact();
@@ -249,7 +250,7 @@ public:
         convertSeed6(vFixedSeeds, pnSeed6_test, ARRAYLEN(pnSeed6_test));
 
         fRequireRPCPassword = true;
-        fMiningRequiresPeers = false;
+        fMiningRequiresPeers = true;
         fAllowMinDifficultyBlocks = true;
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;

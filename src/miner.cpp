@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Domo Domo
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -383,7 +383,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet,
 //								pblock);
 						pblock->payee = txNew.vout[1].scriptPubKey;
 					}
-				} else if (chainActive.Tip()->nHeight > 6000){
+				} else if (chainActive.Tip()->nHeight > 19400){
 					return NULL;
 				}
 			}
@@ -620,6 +620,7 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
 							return;
 						}
 					}
+					MilliSleep(10000);
 					continue;
 				}
 
@@ -651,7 +652,7 @@ void BitcoinMiner(CWallet *pwallet, bool fProofOfStake)
 				//
 				uint256 hashTarget;
 				int64_t nStart = GetTime();
-				if (chainActive.Tip()->nHeight >= 5822 && chainActive.Tip()->nHeight < 6000) {
+				if ((chainActive.Tip()->nHeight >= 5822 && chainActive.Tip()->nHeight < 6000) || (chainActive.Tip()->nHeight >= 19268 && chainActive.Tip()->nHeight < 19400)) {
 					hashTarget = Params().ProofOfWorkLimit();
 				} else {
 					hashTarget = uint256().SetCompact(pblock->nBits);

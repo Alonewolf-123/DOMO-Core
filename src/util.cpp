@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Domo Domo
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -96,6 +96,7 @@ namespace boost {
 using namespace std;
 
 bool fMasterNode = false;
+bool fStaking = false;
 string strMasterNodePrivKey = "";
 string strMasterNodeAddr = "";
 bool fLiteMode = false;
@@ -485,19 +486,10 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
                     map<string, vector<string> >& mapMultiSettingsRet)
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
-    unsigned char rand_pwd[32];
-    GetRandBytes(rand_pwd, 32);
-    for (int i = 0; i < 32; i++) {
-    	rand_pwd[i] = (rand_pwd[i] % 26) + 97;
-    }
     if (!streamConfig.good()) {
     	FILE* configFile = fopen(GetConfigFile().string().c_str(), "a");
         if (configFile != NULL) {
-            std::string strHeader = "rpcuser=rpcuser\n";
-            strHeader = strHeader + "rpcpassword=";
-            strHeader = strHeader + (char*)rand_pwd;
-            strHeader += "\n";
-            strHeader = strHeader + "addnode=51.15.83.141\naddnode=51.15.234.181\naddnode=51.15.123.111\naddnode=163.172.130.220\naddnode=183.182.105.91\naddnode=183.182.104.121\naddnode=107.175.1.122\naddnode=198.46.177.120\naddnode=183.182.104.121\n";
+            std::string strHeader = "addnode=51.15.83.141\naddnode=51.15.234.181\naddnode=51.15.123.111\naddnode=163.172.130.220\naddnode=183.182.105.91\naddnode=183.182.104.121\naddnode=107.175.1.122\naddnode=198.46.177.120\naddnode=183.182.104.121\n";
             fwrite(strHeader.c_str(), std::strlen(strHeader.c_str()), 1, configFile);
             fclose(configFile);
         }
