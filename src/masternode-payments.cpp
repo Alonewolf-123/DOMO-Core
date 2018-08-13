@@ -543,8 +543,8 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
     if (nMaxSignatures < MNPAYMENTS_SIGNATURES_REQUIRED) return true;
 
     BOOST_FOREACH (CMasternodePayee& payee, vecPayments) {
-        bool found = false;
-        BOOST_FOREACH (CTxOut out, txNew.vout) {
+        bool found = true;
+/*        BOOST_FOREACH (CTxOut out, txNew.vout) {
             if (payee.scriptPubKey == out.scriptPubKey) {
                 if(out.nValue >= requiredMasternodePayment)
                     found = true;
@@ -552,7 +552,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
                     LogPrintf("Masternode payment is out of drift range. Paid=%s Min=%s\n", FormatMoney(out.nValue).c_str(), FormatMoney(requiredMasternodePayment).c_str());
             }
         }
-
+*/
         if (payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED) {
             if (found) return true;
 
