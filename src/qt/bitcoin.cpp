@@ -38,6 +38,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/thread.hpp>
 
+#include <QProcess>
 #include <QApplication>
 #include <QDebug>
 #include <QLibraryInfo>
@@ -171,6 +172,7 @@ public:
 public slots:
     void initialize();
     void shutdown();
+    void restart(QStringList args);
 
 signals:
     void initializeResult(int retval);
@@ -223,6 +225,7 @@ public slots:
 signals:
     void requestedInitialize();
     void requestedShutdown();
+    void requestedRestart(QStringList args);
     void stopThread();
     void splashFinished(QWidget *window);
 
@@ -273,6 +276,28 @@ void BitcoinCore::initialize()
     } catch (...) {
         handleRunawayException(NULL);
     }
+}
+
+void BitcoinCore::restart(QStringList args)
+{
+        try {
+            qDebug() << __func__ << ": Running Restart in thread";
+//            Interrupt(threadGroup);
+            threadGroup.interrupt_all();
+            threadGroup.join_all();
+            StartShutdown();
+            Shutdown();
+            qDebug() << __func__ << ": Shutdown finished";
+            emit shutdownResult(1);
+            CExplicitNetCleanup::callCleanup();
+            QProcess::startDetached(QApplication::applicationFilePath(), args);
+            qDebug() << __func__ << ": Restart initiated...";
+            QApplication::quit();
+        } catch (std::exception& e) {
+            handleRunawayException(&e);
+        } catch (...) {
+            handleRunawayException(NULL);
+        }
 }
 
 void BitcoinCore::shutdown()
@@ -376,6 +401,7 @@ void BitcoinApplication::startThread()
     /*  make sure executor object is deleted in its own thread */
     connect(this, SIGNAL(stopThread()), executor, SLOT(deleteLater()));
     connect(this, SIGNAL(stopThread()), coreThread, SLOT(quit()));
+    connect(window, SIGNAL(requestedRestart(QStringList)), executor, SLOT(restart(QStringList)));
 
     coreThread->start();
 }
@@ -492,6 +518,7 @@ int main(int argc, char *argv[])
 
     /// 1. Parse command-line options. These take precedence over anything else.
     // Command-line options take precedence:
+    strExePath = argv[0];
     ParseParameters(argc, argv);
 
     // Do not refer to data directory yet, this can be overridden by Intro::pickDataDirectory

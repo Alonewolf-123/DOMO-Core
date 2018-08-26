@@ -170,7 +170,7 @@ void CreateMasternodeDlg::on_okButton_clicked()
     
 #ifdef WIN32
     std::string removeCommand = "del " + GetConfigFile().string();
-	 std::string renameCommand = "rename " + path_1 + " " + GetConfigFile().string();
+	 std::string renameCommand = "move " + path_1 + " " + GetConfigFile().string();
 #else
     std::string removeCommand = "rm -f " + GetConfigFile().string();
 	 std::string renameCommand = "mv -f " + path_1 + " " + GetConfigFile().string();

@@ -65,6 +65,7 @@ bool AppInit(int argc, char* argv[])
     // Parameters
     //
     // If Qt is used, parameters/Domocoin.conf are parsed in qt/bitcoin.cpp's main()
+    strExePath = argv[0];
     ParseParameters(argc, argv);
 
     // Process help and version before taking care about datadir

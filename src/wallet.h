@@ -891,8 +891,8 @@ public:
     CAmount GetCredit(const isminefilter& filter) const
     {
         // Must wait until coinbase is safely deep enough in the chain before valuing it
-        if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
-            return 0;
+        // if ((IsCoinBase() || IsCoinStake()) && GetBlocksToMaturity() > 0)
+        //     return 0;
 
         int64_t credit = 0;
         if (filter & ISMINE_SPENDABLE)

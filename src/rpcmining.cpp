@@ -19,6 +19,7 @@
 #endif
 
 #include <stdint.h>
+#include <csignal>
 
 #include <boost/assign/list_of.hpp>
 

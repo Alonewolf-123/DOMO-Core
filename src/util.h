@@ -42,6 +42,7 @@ extern int keysLoaded;
 extern bool fSucessfullyLoaded;
 extern std::vector<int64_t> obfuScationDenominations;
 extern std::string strBudgetMode;
+extern std::string strExePath;
 
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;

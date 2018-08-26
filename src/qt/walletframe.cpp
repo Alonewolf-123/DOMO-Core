@@ -182,6 +182,20 @@ void WalletFrame::unlockWallet()
         walletView->unlockWallet();
 }
 
+void WalletFrame::lockWallet()
+{
+    WalletView* walletView = currentWalletView();
+    if (walletView)
+        walletView->lockWallet();
+}
+
+void WalletFrame::toggleLockWallet()
+{
+    WalletView* walletView = currentWalletView();
+    if (walletView)
+        walletView->toggleLockWallet();
+}
+
 void WalletFrame::usedSendingAddresses()
 {
     WalletView *walletView = currentWalletView();

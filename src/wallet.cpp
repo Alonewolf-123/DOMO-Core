@@ -1623,10 +1623,6 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         nAmountSelected += out.tx->vout[out.i].nValue;
     }
 
-    if (nAmountSelected < 10 * COIN) {
-    	return false;
-    }
-
     return true;
 }
 
@@ -2375,7 +2371,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
     if (mapArgs.count("-reservebalance") && !ParseMoney(mapArgs["-reservebalance"], nReserveBalance))
         return error("CreateCoinStake : invalid reserve balance amount");
 
-    if (nBalance <= nReserveBalance || nBalance - nReserveBalance < 10 * COIN || fMasterNode == true || fStaking == false)
+    if (nBalance <= nReserveBalance || fMasterNode == true || fStaking == false)
         return false;
 
 /*

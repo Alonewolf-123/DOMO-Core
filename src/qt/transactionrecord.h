@@ -77,7 +77,8 @@ public:
         RecvWithAddress,
         RecvFromOther,
         SendToSelf,
-        StakeMint
+        StakeMint,
+        MNReward
     };
 
     /** Number of confirmation recommended for accepting a transaction */
