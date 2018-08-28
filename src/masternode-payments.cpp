@@ -544,7 +544,6 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 
     BOOST_FOREACH (CMasternodePayee& payee, vecPayments) {
         bool found = true;
-<<<<<<< HEAD
 /*        BOOST_FOREACH (CTxOut out, txNew.vout) {
             if (payee.scriptPubKey == out.scriptPubKey) {
                 if(out.nValue >= requiredMasternodePayment)
@@ -554,9 +553,6 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
             }
         }
 */
-=======
-
->>>>>>> 3f8b342561dce85b2c939320d181a40a93a3d4b2
         if (payee.nVotes >= MNPAYMENTS_SIGNATURES_REQUIRED) {
             if (found) return true;
 
