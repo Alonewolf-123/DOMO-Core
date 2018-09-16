@@ -1,5 +1,7 @@
-// Copyright (c) 2009-2010 Domo Domo
+// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2015-2018 The PIVX developers
+// Copyright (c) 2018 The DOMO developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -32,10 +34,12 @@
 
 class CAddrMan;
 class CBlockIndex;
+class CScheduler;
 class CNode;
 
-namespace boost {
-    class thread_group;
+namespace boost
+{
+class thread_group;
 } // namespace boost
 
 /** Time between pings automatically sent out for latency probing and keepalive (in seconds). */
@@ -66,35 +70,34 @@ void AddOneShot(std::string strDest);
 bool RecvLine(SOCKET hSocket, std::string& strLine);
 void AddressCurrentlyConnected(const CService& addr);
 CNode* FindNode(const CNetAddr& ip);
+CNode* FindNode(const CSubNet& subNet);
 CNode* FindNode(const std::string& addrName);
 CNode* FindNode(const CService& ip);
-CNode* ConnectNode(CAddress addrConnect, const char *pszDest = NULL, bool obfuScationMaster = false);
-bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
+CNode* ConnectNode(CAddress addrConnect, const char* pszDest = NULL, bool obfuScationMaster = false);
+bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant* grantOutbound = NULL, const char* strDest = NULL, bool fOneShot = false);
 void MapPort(bool fUseUPnP);
 unsigned short GetListenPort();
-bool BindListenPort(const CService &bindAddr, std::string& strError, bool fWhitelisted = false);
-void StartNode(boost::thread_group& threadGroup);
+bool BindListenPort(const CService& bindAddr, std::string& strError, bool fWhitelisted = false);
+void StartNode(boost::thread_group& threadGroup, CScheduler& scheduler);
 bool StopNode();
-void SocketSendData(CNode *pnode);
+void SocketSendData(CNode* pnode);
 
 typedef int NodeId;
 
 // Signals for message handling
-struct CNodeSignals
-{
-    boost::signals2::signal<int ()> GetHeight;
-    boost::signals2::signal<bool (CNode*)> ProcessMessages;
-    boost::signals2::signal<bool (CNode*, bool)> SendMessages;
-    boost::signals2::signal<void (NodeId, const CNode*)> InitializeNode;
-    boost::signals2::signal<void (NodeId)> FinalizeNode;
+struct CNodeSignals {
+    boost::signals2::signal<int()> GetHeight;
+    boost::signals2::signal<bool(CNode*)> ProcessMessages;
+    boost::signals2::signal<bool(CNode*, bool)> SendMessages;
+    boost::signals2::signal<void(NodeId, const CNode*)> InitializeNode;
+    boost::signals2::signal<void(NodeId)> FinalizeNode;
 };
 
 
 CNodeSignals& GetNodeSignals();
 
 
-enum
-{
+enum {
     LOCAL_NONE,   // unknown
     LOCAL_IF,     // address a local interface listens on
     LOCAL_BIND,   // address explicit bound to
@@ -104,20 +107,20 @@ enum
     LOCAL_MAX
 };
 
-bool IsPeerAddrLocalGood(CNode *pnode);
-void AdvertizeLocal(CNode *pnode);
+bool IsPeerAddrLocalGood(CNode* pnode);
+void AdvertizeLocal(CNode* pnode);
 void SetLimited(enum Network net, bool fLimited = true);
 bool IsLimited(enum Network net);
 bool IsLimited(const CNetAddr& addr);
 bool AddLocal(const CService& addr, int nScore = LOCAL_NONE);
 bool AddLocal(const CNetAddr& addr, int nScore = LOCAL_NONE);
+bool RemoveLocal(const CService& addr);
 bool SeenLocal(const CService& addr);
 bool IsLocal(const CService& addr);
-bool GetLocal(CService &addr, const CNetAddr *paddrPeer = NULL);
+bool GetLocal(CService& addr, const CNetAddr* paddrPeer = NULL);
 bool IsReachable(enum Network net);
-bool IsReachable(const CNetAddr &addr);
-void SetReachable(enum Network net, bool fFlag = true);
-CAddress GetLocalAddress(const CNetAddr *paddrPeer = NULL);
+bool IsReachable(const CNetAddr& addr);
+CAddress GetLocalAddress(const CNetAddr* paddrPeer = NULL);
 
 
 extern bool fDiscover;
@@ -156,6 +159,7 @@ public:
     int64_t nLastSend;
     int64_t nLastRecv;
     int64_t nTimeConnected;
+    int64_t nTimeOffset;
     std::string addrName;
     int nVersion;
     std::string cleanSubVer;
@@ -170,22 +174,22 @@ public:
 };
 
 
-
-
-class CNetMessage {
+class CNetMessage
+{
 public:
-    bool in_data;                   // parsing header (false) or data (true)
+    bool in_data; // parsing header (false) or data (true)
 
-    CDataStream hdrbuf;             // partially received header
-    CMessageHeader hdr;             // complete header
+    CDataStream hdrbuf; // partially received header
+    CMessageHeader hdr; // complete header
     unsigned int nHdrPos;
 
-    CDataStream vRecv;              // received message data
+    CDataStream vRecv; // received message data
     unsigned int nDataPos;
 
-    int64_t nTime;                  // time (in microseconds) of message receipt.
+    int64_t nTime; // time (in microseconds) of message receipt.
 
-    CNetMessage(int nTypeIn, int nVersionIn) : hdrbuf(nTypeIn, nVersionIn), vRecv(nTypeIn, nVersionIn) {
+    CNetMessage(int nTypeIn, int nVersionIn) : hdrbuf(nTypeIn, nVersionIn), vRecv(nTypeIn, nVersionIn)
+    {
         hdrbuf.resize(24);
         in_data = false;
         nHdrPos = 0;
@@ -206,12 +210,71 @@ public:
         vRecv.SetVersion(nVersionIn);
     }
 
-    int readHeader(const char *pch, unsigned int nBytes);
-    int readData(const char *pch, unsigned int nBytes);
+    int readHeader(const char* pch, unsigned int nBytes);
+    int readData(const char* pch, unsigned int nBytes);
 };
 
 
+typedef enum BanReason
+{
+    BanReasonUnknown          = 0,
+    BanReasonNodeMisbehaving  = 1,
+    BanReasonManuallyAdded    = 2
+} BanReason;
 
+class CBanEntry
+{
+public:
+    static const int CURRENT_VERSION=1;
+    int nVersion;
+    int64_t nCreateTime;
+    int64_t nBanUntil;
+    uint8_t banReason;
+
+    CBanEntry()
+    {
+        SetNull();
+    }
+
+    CBanEntry(int64_t nCreateTimeIn)
+    {
+        SetNull();
+        nCreateTime = nCreateTimeIn;
+    }
+
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
+        READWRITE(this->nVersion);
+        nVersion = this->nVersion;
+        READWRITE(nCreateTime);
+        READWRITE(nBanUntil);
+        READWRITE(banReason);
+    }
+
+    void SetNull()
+    {
+        nVersion = CBanEntry::CURRENT_VERSION;
+        nCreateTime = 0;
+        nBanUntil = 0;
+        banReason = BanReasonUnknown;
+    }
+
+    std::string banReasonToString()
+    {
+        switch (banReason) {
+        case BanReasonNodeMisbehaving:
+            return "node misbehaving";
+        case BanReasonManuallyAdded:
+            return "manually added";
+        default:
+            return "unknown";
+        }
+    }
+};
+
+typedef std::map<CSubNet, CBanEntry> banmap_t;
 
 
 /** Information about a peer */
@@ -222,7 +285,7 @@ public:
     uint64_t nServices;
     SOCKET hSocket;
     CDataStream ssSend;
-    size_t nSendSize; // total size of all vSendMsg entries
+    size_t nSendSize;   // total size of all vSendMsg entries
     size_t nSendOffset; // offset inside the first vSendMsg already sent
     uint64_t nSendBytes;
     std::deque<CSerializeData> vSendMsg;
@@ -237,6 +300,7 @@ public:
     int64_t nLastSend;
     int64_t nLastRecv;
     int64_t nTimeConnected;
+    int64_t nTimeOffset;
     CAddress addr;
     std::string addrName;
     CService addrLocal;
@@ -269,12 +333,13 @@ public:
     CBloomFilter* pfilter;
     int nRefCount;
     NodeId id;
-protected:
 
+protected:
     // Denial-of-service detection/prevention
     // Key is IP address, value is banned-until-time
-    static std::map<CNetAddr, int64_t> setBanned;
+    static banmap_t setBanned;
     static CCriticalSection cs_setBanned;
+    static bool setBannedIsDirty;
 
     std::vector<std::string> vecRequestsFulfilled; //keep track of what client has asked for
 
@@ -295,13 +360,13 @@ public:
     mruset<CAddress> setAddrKnown;
     bool fGetAddr;
     std::set<uint256> setKnown;
-    uint256 hashCheckpointKnown; // ppcoin: known sent sync-checkpoint
 
     // inventory based relay
     mruset<CInv> setInventoryKnown;
     std::vector<CInv> vInventoryToSend;
     CCriticalSection cs_inventory;
     std::multimap<int64_t, CInv> mapAskFor;
+    std::vector<uint256> vBlockRequested;
 
     // Ping time measurement:
     // The pong reply we're expecting, or 0 if no pong expected.
@@ -313,7 +378,7 @@ public:
     // Whether a ping is requested.
     bool fPingQueued;
 
-    CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false);
+    CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn = false);
     ~CNode();
 
 private:
@@ -327,9 +392,9 @@ private:
     void operator=(const CNode&);
 
 public:
-
-    NodeId GetId() const {
-      return id;
+    NodeId GetId() const
+    {
+        return id;
     }
 
     int GetRefCount()
@@ -342,19 +407,19 @@ public:
     unsigned int GetTotalRecvSize()
     {
         unsigned int total = 0;
-        BOOST_FOREACH(const CNetMessage &msg, vRecvMsg)
+        BOOST_FOREACH (const CNetMessage& msg, vRecvMsg)
             total += msg.vRecv.size() + 24;
         return total;
     }
 
     // requires LOCK(cs_vRecvMsg)
-    bool ReceiveMsgBytes(const char *pch, unsigned int nBytes);
+    bool ReceiveMsgBytes(const char* pch, unsigned int nBytes);
 
     // requires LOCK(cs_vRecvMsg)
     void SetRecvVersion(int nVersionIn)
     {
         nRecvVersion = nVersionIn;
-        BOOST_FOREACH(CNetMessage &msg, vRecvMsg)
+        BOOST_FOREACH (CNetMessage& msg, vRecvMsg)
             msg.SetVersion(nVersionIn);
     }
 
@@ -368,7 +433,6 @@ public:
     {
         nRefCount--;
     }
-
 
 
     void AddAddressKnown(const CAddress& addr)
@@ -424,163 +488,133 @@ public:
 
     void PushMessage(const char* pszCommand)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-    template<typename T1>
+    template <typename T1>
     void PushMessage(const char* pszCommand, const T1& a1)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             ssSend << a1;
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-    template<typename T1, typename T2>
+    template <typename T1, typename T2>
     void PushMessage(const char* pszCommand, const T1& a1, const T2& a2)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             ssSend << a1 << a2;
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-    template<typename T1, typename T2, typename T3>
+    template <typename T1, typename T2, typename T3>
     void PushMessage(const char* pszCommand, const T1& a1, const T2& a2, const T3& a3)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             ssSend << a1 << a2 << a3;
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-    template<typename T1, typename T2, typename T3, typename T4>
+    template <typename T1, typename T2, typename T3, typename T4>
     void PushMessage(const char* pszCommand, const T1& a1, const T2& a2, const T3& a3, const T4& a4)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             ssSend << a1 << a2 << a3 << a4;
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-    template<typename T1, typename T2, typename T3, typename T4, typename T5>
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
     void PushMessage(const char* pszCommand, const T1& a1, const T2& a2, const T3& a3, const T4& a4, const T5& a5)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             ssSend << a1 << a2 << a3 << a4 << a5;
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+    template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
     void PushMessage(const char* pszCommand, const T1& a1, const T2& a2, const T3& a3, const T4& a4, const T5& a5, const T6& a6)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             ssSend << a1 << a2 << a3 << a4 << a5 << a6;
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+    template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
     void PushMessage(const char* pszCommand, const T1& a1, const T2& a2, const T3& a3, const T4& a4, const T5& a5, const T6& a6, const T7& a7)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             ssSend << a1 << a2 << a3 << a4 << a5 << a6 << a7;
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8>
+    template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8>
     void PushMessage(const char* pszCommand, const T1& a1, const T2& a2, const T3& a3, const T4& a4, const T5& a5, const T6& a6, const T7& a7, const T8& a8)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             ssSend << a1 << a2 << a3 << a4 << a5 << a6 << a7 << a8;
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-    template<typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
+    template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
     void PushMessage(const char* pszCommand, const T1& a1, const T2& a2, const T3& a3, const T4& a4, const T5& a5, const T6& a6, const T7& a7, const T8& a8, const T9& a9)
     {
-        try
-        {
+        try {
             BeginMessage(pszCommand);
             ssSend << a1 << a2 << a3 << a4 << a5 << a6 << a7 << a8 << a9;
             EndMessage();
-        }
-        catch (...)
-        {
+        } catch (...) {
             AbortMessage();
             throw;
         }
     }
 
-        template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9, typename T10>
+    template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9, typename T10>
     void PushMessage(const char* pszCommand, const T1& a1, const T2& a2, const T3& a3, const T4& a4, const T5& a5, const T6& a6, const T7& a7, const T8& a8, const T9& a9, const T10& a10)
     {
         try {
@@ -646,9 +680,10 @@ public:
     }
 
     bool IsSubscribed(unsigned int nChannel);
-    void Subscribe(unsigned int nChannel, unsigned int nHops=0);
+    void Subscribe(unsigned int nChannel, unsigned int nHops = 0);
     void CancelSubscribe(unsigned int nChannel);
     void CloseSocketDisconnect();
+    bool DisconnectOldProtocol(int nVersionRequired, std::string strLastCommand = "");
 
     // Denial-of-service detection/prevention
     // The idea is to detect peers that are behaving
@@ -666,11 +701,25 @@ public:
     // new code.
     static void ClearBanned(); // needed for unit testing
     static bool IsBanned(CNetAddr ip);
-    static bool Ban(const CNetAddr &ip);
-    void copyStats(CNodeStats &stats);
+    static bool IsBanned(CSubNet subnet);
+    static void Ban(const CNetAddr &ip, const BanReason &banReason, int64_t bantimeoffset = 0, bool sinceUnixEpoch = false);
+    static void Ban(const CSubNet &subNet, const BanReason &banReason, int64_t bantimeoffset = 0, bool sinceUnixEpoch = false);
+    static bool Unban(const CNetAddr &ip);
+    static bool Unban(const CSubNet &ip);
+    static void GetBanned(banmap_t &banmap);
+    static void SetBanned(const banmap_t &banmap);
 
-    static bool IsWhitelistedRange(const CNetAddr &ip);
-    static void AddWhitelistedRange(const CSubNet &subnet);
+    //!check is the banlist has unwritten changes
+    static bool BannedSetIsDirty();
+    //!set the "dirty" flag for the banlist
+    static void SetBannedSetDirty(bool dirty=true);
+    //!clean unused entires (if bantime has expired)
+    static void SweepBanned();
+
+    void copyStats(CNodeStats& stats);
+
+    static bool IsWhitelistedRange(const CNetAddr& ip);
+    static void AddWhitelistedRange(const CSubNet& subnet);
 
     // Network stats
     static void RecordBytesRecv(uint64_t bytes);
@@ -686,7 +735,6 @@ public:
     static void callCleanup();
 };
 
-
 class CTransaction;
 void RelayTransaction(const CTransaction& tx);
 void RelayTransaction(const CTransaction& tx, const CDataStream& ss);
@@ -698,10 +746,24 @@ class CAddrDB
 {
 private:
     boost::filesystem::path pathAddr;
+
 public:
     CAddrDB();
     bool Write(const CAddrMan& addr);
     bool Read(CAddrMan& addr);
 };
+
+/** Access to the banlist database (banlist.dat) */
+class CBanDB
+{
+private:
+    boost::filesystem::path pathBanlist;
+public:
+    CBanDB();
+    bool Write(const banmap_t& banSet);
+    bool Read(banmap_t& banSet);
+};
+
+void DumpBanlist();
 
 #endif // BITCOIN_NET_H

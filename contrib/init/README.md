@@ -1,9 +1,10 @@
 Sample configuration files for:
 
-SystemD: bitcoind.service
-Upstart: bitcoind.conf
-OpenRC:  bitcoind.openrc
-         bitcoind.openrcconf
+SystemD: domod.service
+Upstart: domod.conf
+OpenRC:  domod.openrc
+         domod.openrcconf
+CentOS:  domod.init
 
 have been made available to assist packagers in creating node packages here.
 

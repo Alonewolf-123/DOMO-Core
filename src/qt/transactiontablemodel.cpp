@@ -1,4 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
+// Copyright (c) 2014-2016 The Dash developers
+// Copyright (c) 2016-2018 The PIVX developers
+// Copyright (c) 2018 The DOMO developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -294,7 +297,7 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord* wtx) cons
         status = tr("This block was not received by any other nodes and will probably not be accepted!");
         break;
     case TransactionStatus::NotAccepted:
-        status = tr("Generated but not accepted");
+        status = tr("Orphan Block - Generated but not accepted. This does not impact your holdings.");
         break;
     }
 
@@ -330,19 +333,44 @@ QString TransactionTableModel::formatTxType(const TransactionRecord* wtx) const
     switch (wtx->type) {
     case TransactionRecord::RecvWithAddress:
         return tr("Received with");
+    case TransactionRecord::MNReward:
+        return tr("Masternode Reward");
     case TransactionRecord::RecvFromOther:
         return tr("Received from");
+    case TransactionRecord::RecvWithObfuscation:
+        return tr("Received via Obfuscation");
     case TransactionRecord::SendToAddress:
     case TransactionRecord::SendToOther:
         return tr("Sent to");
     case TransactionRecord::SendToSelf:
         return tr("Payment to yourself");
+    case TransactionRecord::StakeMint:
+        return tr("DOMO Stake");
+    case TransactionRecord::StakeZDOMO:
+        return tr("zDOMO Stake");
     case TransactionRecord::Generated:
         return tr("Mined");
-    case TransactionRecord::StakeMint:
-        return tr("Stake");
-    case TransactionRecord::MNReward:
-        return tr("MNReward");
+    case TransactionRecord::ObfuscationDenominate:
+        return tr("Obfuscation Denominate");
+    case TransactionRecord::ObfuscationCollateralPayment:
+        return tr("Obfuscation Collateral Payment");
+    case TransactionRecord::ObfuscationMakeCollaterals:
+        return tr("Obfuscation Make Collateral Inputs");
+    case TransactionRecord::ObfuscationCreateDenominations:
+        return tr("Obfuscation Create Denominations");
+    case TransactionRecord::Obfuscated:
+        return tr("Obfuscated");
+    case TransactionRecord::ZerocoinMint:
+        return tr("Converted DOMO to zDOMO");
+    case TransactionRecord::ZerocoinSpend:
+        return tr("Spent zDOMO");
+    case TransactionRecord::RecvFromZerocoinSpend:
+        return tr("Received DOMO from zDOMO");
+    case TransactionRecord::ZerocoinSpend_Change_zDomo:
+        return tr("Minted Change as zDOMO from zDOMO Spend");
+    case TransactionRecord::ZerocoinSpend_FromMe:
+        return tr("Converted zDOMO to DOMO");
+
     default:
         return QString();
     }
@@ -352,14 +380,18 @@ QVariant TransactionTableModel::txAddressDecoration(const TransactionRecord* wtx
 {
     switch (wtx->type) {
     case TransactionRecord::Generated:
-    case TransactionRecord::MNReward:
     case TransactionRecord::StakeMint:
+    case TransactionRecord::StakeZDOMO:
+    case TransactionRecord::MNReward:
         return QIcon(":/icons/tx_mined");
+    case TransactionRecord::RecvWithObfuscation:
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::RecvFromOther:
+    case TransactionRecord::RecvFromZerocoinSpend:
         return QIcon(":/icons/tx_input");
     case TransactionRecord::SendToAddress:
     case TransactionRecord::SendToOther:
+    case TransactionRecord::ZerocoinSpend:
         return QIcon(":/icons/tx_output");
     default:
         return QIcon(":/icons/tx_inout");
@@ -378,13 +410,24 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord* wtx, b
     case TransactionRecord::RecvFromOther:
         return QString::fromStdString(wtx->address) + watchAddress;
     case TransactionRecord::RecvWithAddress:
+    case TransactionRecord::MNReward:
+    case TransactionRecord::RecvWithObfuscation:
     case TransactionRecord::SendToAddress:
     case TransactionRecord::Generated:
-    case TransactionRecord::MNReward:
     case TransactionRecord::StakeMint:
+    case TransactionRecord::ZerocoinSpend:
+    case TransactionRecord::ZerocoinSpend_FromMe:
+    case TransactionRecord::RecvFromZerocoinSpend:
+        return lookupAddress(wtx->address, tooltip);
+    case TransactionRecord::Obfuscated:
         return lookupAddress(wtx->address, tooltip) + watchAddress;
     case TransactionRecord::SendToOther:
         return QString::fromStdString(wtx->address) + watchAddress;
+    case TransactionRecord::ZerocoinMint:
+    case TransactionRecord::ZerocoinSpend_Change_zDomo:
+        return tr("Anonymous (zDOMO Transaction)");
+    case TransactionRecord::StakeZDOMO:
+        return tr("Anonymous (zDOMO Stake)");
     case TransactionRecord::SendToSelf:
     default:
         return tr("(n/a)") + watchAddress;
@@ -393,23 +436,23 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord* wtx, b
 
 QVariant TransactionTableModel::addressColor(const TransactionRecord* wtx) const
 {
-    // Show addresses without label in a less visible color
     switch (wtx->type) {
+    case TransactionRecord::SendToSelf:
+        return COLOR_BAREADDRESS;
+    // Show addresses without label in a less visible color
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::SendToAddress:
-    case TransactionRecord::StakeMint:
     case TransactionRecord::Generated:
     case TransactionRecord::MNReward: {
         QString label = walletModel->getAddressTableModel()->labelForAddress(QString::fromStdString(wtx->address));
         if (label.isEmpty())
             return COLOR_BAREADDRESS;
-    } break;
-    case TransactionRecord::SendToSelf:
-        return COLOR_BAREADDRESS;
-    default:
-        break;
     }
-    return QVariant();
+    default:
+        // To avoid overriding above conditional formats a default text color for this QTableView is not defined in stylesheet,
+        // so we must always return a color here
+        return COLOR_BLACK;
+    }
 }
 
 QString TransactionTableModel::formatTxAmount(const TransactionRecord* wtx, bool showUnconfirmed, BitcoinUnits::SeparatorStyle separators) const
@@ -475,7 +518,7 @@ QString TransactionTableModel::formatTooltip(const TransactionRecord* rec) const
 {
     QString tooltip = formatTxStatus(rec) + QString("\n") + formatTxType(rec);
     if (rec->type == TransactionRecord::RecvFromOther || rec->type == TransactionRecord::SendToOther ||
-        rec->type == TransactionRecord::SendToAddress || rec->type == TransactionRecord::RecvWithAddress) {
+        rec->type == TransactionRecord::SendToAddress || rec->type == TransactionRecord::RecvWithAddress || rec->type == TransactionRecord::MNReward) {
         tooltip += QString(" ") + formatTxToAddress(rec, true);
     }
     return tooltip;
@@ -532,8 +575,12 @@ QVariant TransactionTableModel::data(const QModelIndex& index, int role) const
     case Qt::TextAlignmentRole:
         return column_alignments[index.column()];
     case Qt::ForegroundRole:
-        // Non-confirmed (but not immature) as transactions are grey
-        if (!rec->status.countsForBalance && rec->status.status != TransactionStatus::Immature) {
+        // Conflicted, most probably orphaned
+        if (rec->status.status == TransactionStatus::Conflicted || rec->status.status == TransactionStatus::NotAccepted) {
+            return COLOR_CONFLICTED;
+        }
+        // Unconfimed or immature
+        if ((rec->status.status == TransactionStatus::Unconfirmed) || (rec->status.status == TransactionStatus::Immature)) {
             return COLOR_UNCONFIRMED;
         }
         if (index.column() == Amount && (rec->credit + rec->debit) < 0) {
@@ -542,7 +589,10 @@ QVariant TransactionTableModel::data(const QModelIndex& index, int role) const
         if (index.column() == ToAddress) {
             return addressColor(rec);
         }
-        break;
+
+        // To avoid overriding above conditional formats a default text color for this QTableView is not defined in stylesheet,
+        // so we must always return a color here
+        return COLOR_BLACK;
     case TypeRole:
         return rec->type;
     case DateRole:
@@ -629,9 +679,9 @@ public:
         QString strHash = QString::fromStdString(hash.GetHex());
         qDebug() << "NotifyTransactionChanged : " + strHash + " status= " + QString::number(status);
         QMetaObject::invokeMethod(ttm, "updateTransaction", Qt::QueuedConnection,
-                                  Q_ARG(QString, strHash),
-                                  Q_ARG(int, status),
-                                  Q_ARG(bool, showTransaction));
+            Q_ARG(QString, strHash),
+            Q_ARG(int, status),
+            Q_ARG(bool, showTransaction));
     }
 
 private:

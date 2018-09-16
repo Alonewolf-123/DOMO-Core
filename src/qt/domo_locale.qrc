@@ -1,0 +1,36 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/translations">
+        <file alias="bg">locale/domo_bg.qm</file>
+        <file alias="ca">locale/domo_ca.qm</file>
+        <file alias="cs">locale/domo_cs.qm</file>
+        <file alias="da">locale/domo_da.qm</file>
+        <file alias="de">locale/domo_de.qm</file>
+        <file alias="en">locale/domo_en.qm</file>
+        <file alias="en_US">locale/domo_en_US.qm</file>
+        <file alias="eo">locale/domo_eo.qm</file>
+        <file alias="es">locale/domo_es.qm</file>
+        <file alias="es_ES">locale/domo_es_ES.qm</file>
+        <file alias="fi">locale/domo_fi.qm</file>
+        <file alias="fr_FR">locale/domo_fr_FR.qm</file>
+        <file alias="hi_IN">locale/domo_hi_IN.qm</file>
+        <file alias="hr">locale/domo_hr.qm</file>
+        <file alias="hr_HR">locale/domo_hr_HR.qm</file>
+        <file alias="it">locale/domo_it.qm</file>
+        <file alias="ja">locale/domo_ja.qm</file>
+        <file alias="ko_KR">locale/domo_ko_KR.qm</file>
+        <file alias="lt_LT">locale/domo_lt_LT.qm</file>
+        <file alias="nl">locale/domo_nl.qm</file>
+        <file alias="pl">locale/domo_pl.qm</file>
+        <file alias="pt">locale/domo_pt.qm</file>
+        <file alias="pt_BR">locale/domo_pt_BR.qm</file>
+        <file alias="ro_RO">locale/domo_ro_RO.qm</file>
+        <file alias="ru">locale/domo_ru.qm</file>
+        <file alias="sk">locale/domo_sk.qm</file>
+        <file alias="sv">locale/domo_sv.qm</file>
+        <file alias="tr">locale/domo_tr.qm</file>
+        <file alias="uk">locale/domo_uk.qm</file>
+        <file alias="vi">locale/domo_vi.qm</file>
+        <file alias="zh_CN">locale/domo_zh_CN.qm</file>
+        <file alias="zh_TW">locale/domo_zh_TW.qm</file>
+    </qresource>
+</RCC>

@@ -3,7 +3,7 @@
 <plist version="0.9">
 <dict>
   <key>LSMinimumSystemVersion</key>
-  <string>10.6.0</string>
+  <string>10.8.0</string>
 
   <key>LSArchitecturePriority</key>
   <array>
@@ -17,7 +17,7 @@
   <string>APPL</string>
 
   <key>CFBundleGetInfoString</key>
-  <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@, Copyright © 2009-@COPYRIGHT_YEAR@ The Bitcoin Core and Domocoin Core developers</string>
+  <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@, Copyright © 2009-@COPYRIGHT_YEAR@ The Bitcoin Core developers, 2014-@COPYRIGHT_YEAR@ The Dash Core developers, 2015-@COPYRIGHT_YEAR@ The PIVX Core developers, @COPYRIGHT_YEAR@ The DOMO Core developers</string>
 
   <key>CFBundleShortVersionString</key>
   <string>@CLIENT_VERSION_MAJOR@.@CLIENT_VERSION_MINOR@.@CLIENT_VERSION_REVISION@</string>
@@ -29,10 +29,16 @@
   <string>????</string>
 
   <key>CFBundleExecutable</key>
-  <string>Domocoin-Qt</string>
+  <string>DOMO-Qt</string>
+  
+  <key>CFBundleName</key>
+  <string>DOMO-Qt</string>
+
+  <key>LSHasLocalizedDisplayName</key>
+  <true/>
 
   <key>CFBundleIdentifier</key>
-  <string>org.Domocoinfoundation.Domocoin-Qt</string>
+  <string>io.domo.Domo-Qt</string>
 
   <key>CFBundleURLTypes</key>
   <array>
@@ -40,10 +46,10 @@
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>CFBundleURLName</key>
-      <string>org.Domocoin.DomocoinPayment</string>
+      <string>io.domo.DomoPayment</string>
       <key>CFBundleURLSchemes</key>
       <array>
-        <string>Domocoin</string>
+        <string>domo</string>
       </array>
     </dict>
   </array>
@@ -52,9 +58,9 @@
   <array>
     <dict>
       <key>UTTypeIdentifier</key>
-      <string>org.Domocoin.paymentrequest</string>
+      <string>io.domo.paymentrequest</string>
       <key>UTTypeDescription</key>
-      <string>Domocoin payment request</string>
+      <string>Domo payment request</string>
       <key>UTTypeConformsTo</key>
       <array>
         <string>public.data</string>
@@ -62,10 +68,10 @@
       <key>UTTypeTagSpecification</key>
       <dict>
         <key>public.mime-type</key>
-        <string>application/x-Domocoin-payment-request</string>
+        <string>application/x-domo-payment-request</string>
         <key>public.filename-extension</key>
         <array>
-          <string>Domocoinpaymentrequest</string>
+          <string>domopaymentrequest</string>
         </array>
       </dict>
     </dict>
@@ -78,7 +84,7 @@
       <string>Editor</string>
       <key>LSItemContentTypes</key>
       <array>
-        <string>org.Domocoin.paymentrequest</string>
+        <string>io.domo.paymentrequest</string>
       </array>
       <key>LSHandlerRank</key>
       <string>Owner</string>

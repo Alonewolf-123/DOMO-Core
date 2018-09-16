@@ -1,4 +1,6 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2017 The PIVX developers
+// Copyright (c) 2018 The DOMO developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +12,7 @@
 #include "script/standard.h"
 #include "serialize.h"
 #include "streams.h"
-#include "univalue/univalue.h"
+#include <univalue.h>
 #include "util.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
@@ -62,7 +64,8 @@ string EncodeHexTx(const CTransaction& tx)
 }
 
 void ScriptPubKeyToUniv(const CScript& scriptPubKey,
-                        UniValue& out, bool fIncludeHex)
+    UniValue& out,
+    bool fIncludeHex)
 {
     txnouttype type;
     vector<CTxDestination> addresses;
@@ -81,7 +84,7 @@ void ScriptPubKeyToUniv(const CScript& scriptPubKey,
     out.pushKV("type", GetTxnOutputType(type));
 
     UniValue a(UniValue::VARR);
-    BOOST_FOREACH(const CTxDestination& addr, addresses)
+    BOOST_FOREACH (const CTxDestination& addr, addresses)
         a.push_back(CBitcoinAddress(addr).ToString());
     out.pushKV("addresses", a);
 }
@@ -93,7 +96,7 @@ void TxToUniv(const CTransaction& tx, const uint256& hashBlock, UniValue& entry)
     entry.pushKV("locktime", (int64_t)tx.nLockTime);
 
     UniValue vin(UniValue::VARR);
-    BOOST_FOREACH(const CTxIn& txin, tx.vin) {
+    BOOST_FOREACH (const CTxIn& txin, tx.vin) {
         UniValue in(UniValue::VOBJ);
         if (tx.IsCoinBase())
             in.pushKV("coinbase", HexStr(txin.scriptSig.begin(), txin.scriptSig.end()));

@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2010 Domo Domo
+// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -34,10 +34,6 @@ typedef enum ScriptError_t
     SCRIPT_ERR_INVALID_STACK_OPERATION,
     SCRIPT_ERR_INVALID_ALTSTACK_OPERATION,
     SCRIPT_ERR_UNBALANCED_CONDITIONAL,
-
-    /* OP_CHECKLOCKTIMEVERIFY */
-    SCRIPT_ERR_NEGATIVE_LOCKTIME,
-    SCRIPT_ERR_UNSATISFIED_LOCKTIME,
 
     /* BIP62 */
     SCRIPT_ERR_SIG_HASHTYPE,

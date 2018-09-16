@@ -1,0 +1,26 @@
+[Unit]
+Description=DOMO's distributed currency daemon
+After=network.target
+
+[Service]
+User=domo
+Group=domo
+
+Type=forking
+PIDFile=/var/lib/domod/domod.pid
+
+ExecStart=/usr/bin/domod -daemon -pid=/var/lib/domod/domod.pid \
+          -conf=/etc/domo/domo.conf -datadir=/var/lib/domod
+
+ExecStop=-/usr/bin/domo-cli -conf=/etc/domo/domo.conf \
+         -datadir=/var/lib/domod stop
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

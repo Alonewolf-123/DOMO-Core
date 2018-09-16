@@ -1,4 +1,6 @@
 // Copyright (c) 2014 The Bitcoin developers
+// Copyright (c) 2017 The PIVX developers
+// Copyright (c) 2018 The DOMO developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,8 +11,8 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between bitcoin-cli and bitcoind)
- * of a given instance of the Domocoin system.
+ * CBaseChainParams defines the base parameters (shared between domo-cli and domod)
+ * of a given instance of the Domo system.
  */
 class CBaseChainParams
 {

@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2010 Domo Domo
+// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2013 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -7,8 +7,8 @@
 #define BITCOIN_ALLOCATORS_H
 
 #include <map>
-#include <string>
 #include <string.h>
+#include <string>
 #include <vector>
 
 #include <boost/thread/mutex.hpp>
@@ -40,7 +40,6 @@ public:
 
     ~LockedPageManagerBase()
     {
-        assert(this->GetLockedPageCount() == 0);
     }
 
 

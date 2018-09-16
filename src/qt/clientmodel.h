@@ -1,4 +1,7 @@
-// Copyright (c) 2011-2013 The Bitcoin developers
+// Copyright (c) 2011-2014 The Bitcoin developers
+// Copyright (c) 2014-2015 The Dash developers
+// Copyright (c) 2015-2018 The PIVX developers
+// Copyright (c) 2018 The DOMO developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,8 +9,10 @@
 #define BITCOIN_QT_CLIENTMODEL_H
 
 #include <QObject>
+#include <QDateTime>
 
 class AddressTableModel;
+class BanTableModel;
 class OptionsModel;
 class PeerTableModel;
 class TransactionTableModel;
@@ -28,25 +33,27 @@ enum BlockSource {
 
 enum NumConnections {
     CONNECTIONS_NONE = 0,
-    CONNECTIONS_IN   = (1U << 0),
-    CONNECTIONS_OUT  = (1U << 1),
-    CONNECTIONS_ALL  = (CONNECTIONS_IN | CONNECTIONS_OUT),
+    CONNECTIONS_IN = (1U << 0),
+    CONNECTIONS_OUT = (1U << 1),
+    CONNECTIONS_ALL = (CONNECTIONS_IN | CONNECTIONS_OUT),
 };
 
-/** Model for Bitcoin network client. */
+/** Model for DOMO network client. */
 class ClientModel : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit ClientModel(OptionsModel *optionsModel, QObject *parent = 0);
+    explicit ClientModel(OptionsModel* optionsModel, QObject* parent = 0);
     ~ClientModel();
 
-    OptionsModel *getOptionsModel();
-    PeerTableModel *getPeerTableModel();
+    OptionsModel* getOptionsModel();
+    PeerTableModel* getPeerTableModel();
+    BanTableModel *getBanTableModel();
 
     //! Return number of connections, default is in- and outbound (total)
     int getNumConnections(unsigned int flags = CONNECTIONS_ALL) const;
+    QString getMasternodeCountString() const;
     int getNumBlocks() const;
     int getNumBlocksAtStartup();
 
@@ -69,17 +76,22 @@ public:
     QString clientName() const;
     QString formatClientStartupTime() const;
 
+    bool getTorInfo(std::string& ip_port) const;
+
 private:
-    OptionsModel *optionsModel;
-    PeerTableModel *peerTableModel;
+    OptionsModel* optionsModel;
+    PeerTableModel* peerTableModel;
+    BanTableModel *banTableModel;
 
     int cachedNumBlocks;
+    QString cachedMasternodeCountString;
     bool cachedReindexing;
     bool cachedImporting;
 
     int numBlocksAtStartup;
 
-    QTimer *pollTimer;
+    QTimer* pollTimer;
+    QTimer* pollMnTimer;
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
@@ -87,19 +99,22 @@ private:
 signals:
     void numConnectionsChanged(int count);
     void numBlocksChanged(int count);
-    void alertsChanged(const QString &warnings);
+    void strMasternodesChanged(const QString& strMasternodes);
+    void alertsChanged(const QString& warnings);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);
 
     //! Fired when a message should be reported to the user
-    void message(const QString &title, const QString &message, unsigned int style);
+    void message(const QString& title, const QString& message, unsigned int style);
 
     // Show progress dialog e.g. for verifychain
-    void showProgress(const QString &title, int nProgress);
+    void showProgress(const QString& title, int nProgress);
 
 public slots:
     void updateTimer();
+    void updateMnTimer();
     void updateNumConnections(int numConnections);
-    void updateAlert(const QString &hash, int status);
+    void updateAlert(const QString& hash, int status);
+    void updateBanlist();
 };
 
 #endif // BITCOIN_QT_CLIENTMODEL_H

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=DOMO
+Comment=DOMO P2P Cryptocurrency
+Comment[fr]=DOMO, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=DOMO, eşten eşe kriptografik sanal para birimi
+Exec=domo-qt %u
+Terminal=false
+Type=Application
+Icon=domo128
+MimeType=x-scheme-handler/domo;
+Categories=Office;Finance;

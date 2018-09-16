@@ -1,4 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
+// Copyright (c) 2017 The PIVX developers
+// Copyright (c) 2018 The DOMO developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,8 +11,9 @@
 
 class AddressTableModel;
 
-namespace Ui {
-    class EditAddressDialog;
+namespace Ui
+{
+class EditAddressDialog;
 }
 
 QT_BEGIN_NAMESPACE
@@ -31,14 +34,14 @@ public:
         EditSendingAddress
     };
 
-    explicit EditAddressDialog(Mode mode, QWidget *parent);
+    explicit EditAddressDialog(Mode mode, QWidget* parent);
     ~EditAddressDialog();
 
-    void setModel(AddressTableModel *model);
+    void setModel(AddressTableModel* model);
     void loadRow(int row);
 
     QString getAddress() const;
-    void setAddress(const QString &address);
+    void setAddress(const QString& address);
 
 public slots:
     void accept();
@@ -46,10 +49,10 @@ public slots:
 private:
     bool saveCurrentRow();
 
-    Ui::EditAddressDialog *ui;
-    QDataWidgetMapper *mapper;
+    Ui::EditAddressDialog* ui;
+    QDataWidgetMapper* mapper;
     Mode mode;
-    AddressTableModel *model;
+    AddressTableModel* model;
 
     QString address;
 };

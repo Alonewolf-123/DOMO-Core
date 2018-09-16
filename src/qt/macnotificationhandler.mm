@@ -1,4 +1,6 @@
 // Copyright (c) 2011-2013 The Bitcoin Core developers
+// Copyright (c) 2015-2017 The PIVX developers
+// Copyright (c) 2018 The DOMO developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +15,7 @@
 - (NSString *)__bundleIdentifier
 {
     if (self == [NSBundle mainBundle]) {
-        return @"org.bitcoinfoundation.Domocoin-Qt";
+        return @"io.domo.Domo-Qt";
     } else {
         return [self __bundleIdentifier];
     }
@@ -47,20 +49,6 @@ void MacNotificationHandler::showNotification(const QString &title, const QStrin
     }
 }
 
-// sendAppleScript just take a QString and executes it as apple script
-void MacNotificationHandler::sendAppleScript(const QString &script)
-{
-    QByteArray utf8 = script.toUtf8();
-    char* cString = (char *)utf8.constData();
-    NSString *scriptApple = [[NSString alloc] initWithUTF8String:cString];
-
-    NSAppleScript *as = [[NSAppleScript alloc] initWithSource:scriptApple];
-    NSDictionary *err = nil;
-    [as executeAndReturnError:&err];
-    [as release];
-    [scriptApple release];
-}
-
 bool MacNotificationHandler::hasUserNotificationCenterSupport(void)
 {
     Class possibleClass = NSClassFromString(@"NSUserNotificationCenter");
@@ -78,7 +66,7 @@ MacNotificationHandler *MacNotificationHandler::instance()
     static MacNotificationHandler *s_instance = NULL;
     if (!s_instance) {
         s_instance = new MacNotificationHandler();
-
+        
         Class aPossibleClass = objc_getClass("NSBundle");
         if (aPossibleClass) {
             // change NSBundle -bundleIdentifier method to return a correct bundle identifier
